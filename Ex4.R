@@ -63,7 +63,7 @@ for (runs in 1:100) {
   X.train <- X[1:(n/2),];V.train <- V[1:(n/2)];ff.train <- ff[1:(n/2),]
   X.test <- X[(n/2+1):n,];V.test <- V[(n/2+1):n];ff.test <- ff[(n/2+1):n,]
   
-  fit10 <- LMNIRpen1(X.train, (V.train),base=initbase, penalty=NULL, n.factors=k, maxit = 500)#scale
+  fit10 <- FAIR(X.train, (V.train),base=initbase, penalty=NULL, n.factors=k, maxit = 500)#scale
   phi10 <- c(fit10[["model.coefs"]][["phi"]],0)
   Beta10 <- c(fit10[["model.coefs"]][["Beta"]],0)
   Q=diag(p)-1/p
