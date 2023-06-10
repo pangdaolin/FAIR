@@ -39,16 +39,12 @@ for (runs in 1:100) {
   m.train=rowSums(X.train)
   k2 <- ncol(as.matrix(V.train))
   nn <- nrow(as.matrix(V.train))
-  bic10 <- numeric();bic11 <- numeric();bic12 <- numeric();aic11 <- numeric();aic12 <- numeric();
-  bic20 <- numeric();bic21 <- numeric();bic22 <- numeric();aic21 <- numeric();aic22 <- numeric();
-  hic <- numeric();dic1 <- numeric();dic2 <- numeric();dic3 <- numeric();dic4 <- numeric();
+  bic <- numeric();aic <- numeric()
+  hic1 <- numeric();hic2 <- numeric()
   for (i in 0:4) {
     res1 <- FAIR(X.train, V.train, base = p, n.factors=i, maxit = 500)
-    bic10[i+1] <- -2*res1[["ELBO"]]
-    bic11[i+1] <- -2*res1[["ELBO"]] + (i*((p-1)+2*nn))*log(nn)
-    bic12[i+1] <- -2*res1[["ELBO"]] + (i*((p-1)+2*nn)+(p-1)*k2)*log(nn)
-    aic11[i+1] <- -2*res1[["ELBO"]] + (i*((p-1)+2*nn))*2
-    aic12[i+1] <- -2*res1[["ELBO"]] + (i*((p-1)+2*nn)+(p-1)*k2)*2
+    bic[i+1] <- -2*res1[["ELBO"]] + (i*((p-1)+2*nn)+(p-1)*k2)*log(nn)
+    aic[i+1] <- -2*res1[["ELBO"]] + (i*((p-1)+2*nn)+(p-1)*k2)*2
     if(i==0){
       V.new=as.matrix(V.train)
     }else{
@@ -60,70 +56,40 @@ for (runs in 1:100) {
     qt=try(sweep4 <- MGLMreg(formula=X.train~1+V.new, dist="MN"))
     if("try-error" %in% class(qt)){ print("error")
     }else{
-      hic[i+1] <- -2*logLik(sweep4)+log(nn)*(i*(p-1)+(p-1)*k2)+2*i*nn
       pd <- 2*logLik(sweep4)-2*(res1[["ELBO1"]]+ sum(lgamma(m.train + 1)) - sum(lgamma(X.train + 1)))
-      dic1[i+1] <- -2*logLik(sweep4)+2*(pd+i*(p-1)+(p-1)*k2)
-      dic2[i+1] <- -2*logLik(sweep4)+log(nn)*(i*(p-1)+(p-1)*k2)+2*pd
-      dic3[i+1] <- -2*logLik(sweep4)+2*(i*(p-1)+(p-1)*k2)+log(nn)*pd
-      dic4[i+1] <- -2*logLik(sweep4)+log(nn)*(i*(p-1)+(p-1)*k2+pd)
+      hic1[i+1] <- -2*logLik(sweep4)+2*(pd+i*(p-1)+(p-1)*k2)
+      hic2[i+1] <- -2*logLik(sweep4)+log(nn)*(i*(p-1)+(p-1)*k2+pd)
     }
   }
-  nf11[runs] <- which.min(bic10)-1
-  nf12[runs] <- which.min(bic11)-1
-  nf13[runs] <- which.min(bic12)-1
-  nf14[runs] <- which.min(aic11)-1
-  nf15[runs] <- which.min(aic12)-1
-  nf16[runs] <- which.min(hic)-1
-  nf17[runs] <- which.min(dic1)-1
-  nf18[runs] <- which.min(dic2)-1
-  nf19[runs] <- which.min(dic3)-1
-  nf20[runs] <- which.min(dic4)-1
+  nfbic[runs] <- which.min(bic)-1
+  nfaic[runs] <- which.min(aic)-1
+  nfhic1[runs] <- which.min(hic1)-1
+  nfhic2[runs] <- which.min(hic2)-1
 }
 
-sum(nf11==0)
-sum(nf12==0)
-sum(nf13==0)
-sum(nf14==0)
-sum(nf15==0)
-sum(nf16==0)
-sum(nf17==0)
-sum(nf18==0)
-sum(nf19==0)
-sum(nf20==0)
-
-sum(nf11==1)
-sum(nf12==1)
-sum(nf13==1)
-sum(nf14==1)
-sum(nf15==1)
-sum(nf16==1)
-sum(nf17==1)
-sum(nf18==1)
-sum(nf19==1)
-sum(nf20==1)
+sum(nfbic==0)
+sum(nfaic==0)
+sum(nfhic1==0)
+sum(nfhic2==0)
 
 
-sum(nf11==2)
-sum(nf12==2)
-sum(nf13==2)
-sum(nf14==2)
-sum(nf15==2)
-sum(nf16==2)
-sum(nf17==2)
-sum(nf18==2)
-sum(nf19==2)
-sum(nf20==2)
+sum(nfbic==1)
+sum(nfaic==1)
+sum(nfhic1==1)
+sum(nfhic2==1)
 
-sum(nf11>2)
-sum(nf12>2)
-sum(nf13>2)
-sum(nf14>2)
-sum(nf15>2)
-sum(nf16>2)
-sum(nf17>2)
-sum(nf18>2)
-sum(nf19>2)
-sum(nf20>2)
+
+sum(nfbic==2)
+sum(nfaic==2)
+sum(nfhic1==2)
+sum(nfhic2==2)
+
+
+sum(nfbic>2)
+sum(nfaic>2)
+sum(nfhic1>2)
+sum(nfhic2>2)
+
 
 save.image("nfEx1.RData")
 
