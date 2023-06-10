@@ -1,11 +1,9 @@
 ##k=0
-library(MASS)
 library(MGLM)
 source("FAIR.R")
 
 n=60; p=10; k=1;
-nf11 <- numeric();nf12 <- numeric();nf13 <- numeric();nf14 <- numeric();nf15 <- numeric();
-nf16 <- numeric();nf17 <- numeric();nf18 <- numeric();nf19 <- numeric();nf20 <- numeric();
+nfbic <- numeric();nfaic <- numeric();nfhic1 <- numeric();nfhic2 <- numeric()
 set.seed(927)
 alpha <- rnorm(p-1, mean = 0, sd = 1)
 # phi <- sample(c(-3:-1,1:3),p-1,replace = T)
