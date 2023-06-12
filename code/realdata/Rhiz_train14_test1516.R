@@ -7,10 +7,10 @@ library(MGLM)
 library(mgcv)
 library(readr)
 library(openxlsx)
-lc_study_otu_table <- read_tsv("/Users/pangdaolin/Documents/mypro/2022/mypro/2021/data/plant age/lc_study_otu_table.tsv")
-lc_study_mapping_file <- read_tsv("/Users/pangdaolin/Documents/mypro/2022/mypro/2021/data/plant age/lc_study_mapping_file.tsv")
-data.id <- read.xlsx("/Users/pangdaolin/Documents/mypro/2022/mypro/2021/data/plant age/pbio.2003862.s004.xlsx")	
-imp.otu <- read.xlsx("/Users/pangdaolin/Documents/mypro/2022/mypro/2021/data/plant age/pbio.2003862.s040.xlsx")
+lc_study_otu_table <- read_tsv("data/lc_study_otu_table.tsv")
+lc_study_mapping_file <- read_tsv("data/lc_study_mapping_file.tsv")
+data.id <- read.xlsx("data/pbio.2003862.s004.xlsx")	
+imp.otu <- read.xlsx("data/pbio.2003862.s040.xlsx")
 
 
 data.train1.id <- data.id[which(data.id$Compartment=="Rhizosphere"&data.id$Season=="2014"),1]#data.id$Site=="Arbuckle"&
