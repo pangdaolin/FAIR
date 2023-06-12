@@ -5,14 +5,11 @@ library(randomForest)
 library(glmnet)
 library(MGLM)
 library(mgcv)
-
 library(readr)
 library(openxlsx)
-cal_2016 <- readRDS("/home/daolinpang/project1/data/cal_2016.rds")
-length(unique(cal_2016[,1]))
-cal_ark_data <- readRDS("/home/daolinpang/project1/data/cal_ark_data.rds")
-gg_otus_tax <- readRDS("/home/daolinpang/project1/data/gg_otus_tax.rds")
-organelle <- readRDS("/home/daolinpang/project1/data/organelle.rds")
+
+source("FAIR.R")
+
 lc_study_otu_table <- read_tsv("/home/daolinpang/project1/data/lc_study_otu_table.tsv")
 lc_study_mapping_file <- read_tsv("/home/daolinpang/project1/data/lc_study_mapping_file.tsv")
 data.id <- read.xlsx("/home/daolinpang/project1/data/pbio.2003862.s004.xlsx")	
@@ -21,6 +18,7 @@ imp.otu <- read.xlsx("/home/daolinpang/project1/data/pbio.2003862.s040.xlsx")
 
 data.train1.id <- data.id[which(data.id$Compartment=="Endosphere"&data.id$Season=="2014"),1]#data.id$Site=="Arbuckle"&
 data.test1.id <- data.id[which(data.id$Compartment=="Endosphere"&data.id$Season=="2015"),1]#data.id$Site=="Arbuckle"&
+# data.test1.id <- data.id[which(data.id$Compartment=="Endosphere"&data.id$Season=="2016"),1]#data.id$Site=="Arbuckle"&
 imp.otu1 <- imp.otu[which(imp.otu$Compartment=="Endosphere"),1]
 OTU.id <- lc_study_otu_table$OTUID
 all.data.id <- colnames(lc_study_otu_table)
@@ -31,8 +29,6 @@ X.test1 <- t(as(X.test1,"matrix"))
 Y.train1 <- lc_study_mapping_file$Age[match(data.train1.id,all.data.id)[-which(match(data.train1.id,all.data.id,nomatch = 0)==0)]]
 Y.test1 <- lc_study_mapping_file$Age[match(data.test1.id,all.data.id)[-which(match(data.test1.id,all.data.id,nomatch = 0)==0)]]
 
-# which(rowSums(X.train1)==0)
-# which(colSums(X.train1==0)==0)
 X.train1x <- X.train1[,c(1:(22-1),(22+1):(ncol(X.train1)),22)]
 X.test1x <- X.test1[,c(1:(22-1),(22+1):(ncol(X.test1)),22)]
 
@@ -65,7 +61,6 @@ if(newbase1==1){
 }
 
 model1 <- FAIR(X.traint, scale(Y.train), penalty=T, n.factors=1,ngridpt=100,keep.path=T, maxit = 500)
-
 phi1 <- model1[["model.coefs"]][["phi"]]
 Beta1 <- model1[["model.coefs"]][["Beta"]]
 
@@ -88,7 +83,6 @@ z12_test <- X.test%*%(Beta1)/m1
 res1 = data.frame(Y=Y.train,X1=(z11_train),X2=(z12_train))#,m=scale(m)
 train.object <- data.frame(X1=z11_train,X2=z12_train)
 test.object <- data.frame(X1=z11_test,X2=z12_test)
-
 GAM2 <- gam(Y~s(X1,X2),data=data.frame(res1))
 pre12 <- predict(GAM2,test.object)
 err11 <- sqrt(sum((pre12-Y.test)^2)/length(Y.test))
@@ -104,7 +98,6 @@ err12 <- sqrt(sum((pre5-Y.test)^2)/length(Y.test))
 model3 <- mnlm(cl=NULL, Y.train, X.train, free=1)
 B <- coef(model3)
 phi3 <- as.matrix(B[-1,,drop=FALSE])
-phi.fit3 <- cbind(phi.fit3, phi3)
 z31_train <- as.vector(X.train%*%t(phi3))/m
 z31_test <- as.vector(X.test%*%t(phi3))/m1#ZZ1
 res2 = data.frame(Y=Y.train,X1=(z31_train))
@@ -116,7 +109,9 @@ err13 <- sqrt(sum((pre3-Y.test)^2)/length(Y.test))
 ###############
 model6 <- cv.glmnet(x=X.train/m,y = Y.train,family = "gaussian")
 pre62 <- predict(model6,X.test/m1, s = "lambda.1se")   #预测
-
 err14 <- sqrt(sum((pre62-Y.test)^2)/length(Y.test))
 
+#############      output      ################
+errdata <- data.frame(Error=c(err11,err12,err13,err14),Methods=c("FAIR-GAM","randomForest","MNIR-GAM","glmnet"))
+errdata
 
