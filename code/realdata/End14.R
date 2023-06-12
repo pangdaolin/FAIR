@@ -7,50 +7,23 @@ library(MGLM)
 library(mgcv)
 library(readr)
 library(openxlsx)
-cal_2016 <- readRDS("D:/pdl/mypro/2021/data/plant age/cal_2016.rds")
-# length(unique(cal_2016[,1]))
-cal_ark_data <- readRDS("D:/pdl/mypro/2021/data/plant age/cal_ark_data.rds")
-gg_otus_tax <- readRDS("D:/pdl/mypro/2021/data/plant age/gg_otus_tax.rds")
-organelle <- readRDS("D:/pdl/mypro/2021/data/plant age/organelle.rds")
-lc_study_otu_table <- read_tsv("D:/pdl/mypro/2021/data/plant age/lc_study_otu_table.tsv")
-lc_study_mapping_file <- read_tsv("D:/pdl/mypro/2021/data/plant age/lc_study_mapping_file.tsv")
-data.id <- read.xlsx("D:/pdl/mypro/2021/data/plant age/pbio.2003862.s004.xlsx")	
-imp.otu <- read.xlsx("D:/pdl/mypro/2021/data/plant age/pbio.2003862.s040.xlsx")
-
-# data1.id <- data.id[which(data.id$Compartment=="Rhizosphere"&data.id$Site=="Arbuckle"&data.id$Season=="2014"),1]
-# imp.otu1 <- imp.otu[which(imp.otu$Compartment=="Rhizosphere"),1]
-
+source("FAIR.R")
+lc_study_otu_table <- read_tsv("/data/lc_study_otu_table.tsv")
+lc_study_mapping_file <- read_tsv("/data/lc_study_mapping_file.tsv")
+data.id <- read.xlsx("/data/pbio.2003862.s004.xlsx")	
+imp.otu <- read.xlsx("/data/pbio.2003862.s040.xlsx")
 data1.id <- data.id[which(data.id$Compartment=="Endosphere"&data.id$Season=="2014"),1]
-# data1.id <- data.id[which(data.id$Compartment=="Rhizosphere"&data.id$type=="Test"),1]
 imp.otu1 <- imp.otu[which(imp.otu$Compartment=="Endosphere"),1]
 
 OTU.id <- lc_study_otu_table$OTUID
 all.data.id <- colnames(lc_study_otu_table)
 X.train1 <- lc_study_otu_table[match(imp.otu1,OTU.id),match(data1.id,all.data.id)[-which(match(data1.id,all.data.id,nomatch = 0)==0)]]#[-which(match(data1.id,all.data.id,nomatch = 0)==0)]
 X.train1 <- t(as(X.train1,"matrix"))
-# X.test1 <- lc_study_otu_table[match(imp.otu1,OTU.id),match(data.test1.id,all.data.id)[-which(match(data.test1.id,all.data.id,nomatch = 0)==0)]]
-# X.test1 <- t(as(X.test1,"matrix"))
 Y.train1 <- lc_study_mapping_file$Age[match(data1.id,all.data.id)[-which(match(data1.id,all.data.id,nomatch = 0)==0)]]#[-which(match(data1.id,all.data.id,nomatch = 0)==0)]
-# Y.test1 <- lc_study_mapping_file$Age[match(data.test1.id,all.data.id)[-which(match(data.test1.id,all.data.id,nomatch = 0)==0)]]
-which(rowSums(X.train1)==0)
-which(colSums(X.train1==0)==0)
 X.train1x <- X.train1[,c(1:(22-1),(22+1):(ncol(X.train1)),22)]
 
 X.data <- as.matrix(X.train1x)
 Y.data <- Y.train1 
-CVgroup <- function(k,datasize,seed){
-  cvlist <- list()
-  set.seed(seed)
-  n <- rep(1:k,ceiling(datasize/k))[1:datasize]    #将数据分成K份，并生成的完成数据集n
-  temp <- sample(n,datasize)   #把n打乱
-  x <- 1:k
-  dataseq <- 1:datasize
-  cvlist <- lapply(x,function(x) dataseq[temp==x])  #dataseq中随机生成k个随机有序数据列
-  return(cvlist)
-}
-ck=10
-datasize <- nrow(X.data)
-cvlist <- CVgroup(k = ck,datasize = datasize,seed = 9708)
 
 rmse11 <- numeric()
 rmse12 <- numeric()
@@ -75,14 +48,9 @@ Beta.fit5 <- rep(1, p)
 
 set.seed(123456)
 for (i in 1:100){
-  # i=1
-  # X.train1x <- X.data[-cvlist[[i]],]  #刚才通过cvgroup生成的函数
-  # X.test1x <- X.data[cvlist[[i]],]
-  # Y.train1 <- Y.data[-cvlist[[i]]]
-  # Y.test1 <- Y.data[cvlist[[i]]]
-  
+
   train.id <- sample(datasize,round(datasize/3*2))
-  X.train <- X.data[train.id,]  #刚才通过cvgroup生成的函数
+  X.train <- X.data[train.id,]  
   X.test <- X.data[-train.id,]
   Y.train <- Y.data[train.id]
   Y.test <- Y.data[-train.id]
@@ -90,17 +58,14 @@ for (i in 1:100){
   X.test=X.test[,which(colSums(X.train)!=0)]
   X.train=X.train[,which(colSums(X.train)!=0)]
   p=ncol(X.train)
-  # colSums(X.train1x)
-  
   m <- rowSums(X.train)
   m1 <- rowSums(X.test)
   
   ###############################################
-  fit0 <- LMNIRpen1(X.train, scale(Y.train), penalty=NULL, n.factors=1, maxit = 500)
+  fit0 <- FAIR(X.train, scale(Y.train), penalty=NULL, n.factors=1, maxit = 500)
   phi0 <- c(fit0[["model.coefs"]][["phi"]],0)
   Beta0 <- c(fit0[["model.coefs"]][["Beta"]],0)
   Q=diag(p)-1/p
-  # E=rbind(diag(p-1),-1)
   QC1=cbind(Q%*%(phi0),Q%*%(Beta0))
   newbase1=which.min(sqrt(rowSums(QC1^2)))#+(initbase<=which.min(sqrt(rowSums(QC1^2))))
   
@@ -113,7 +78,7 @@ for (i in 1:100){
     X.test1 <- X.test[,c((newbase1+1):(p),newbase1)]
   }
   
-  model1 <- LMNIRpen1(X.train1, scale(Y.train), penalty=T, n.factors=1, maxit = 500)
+  model1 <- FAIR(X.train1, scale(Y.train), penalty=T, n.factors=1, maxit = 500)
   phi1 <- model1[["model.coefs"]][["phi"]]
   Beta1 <- model1[["model.coefs"]][["Beta"]]
   phi2 <- model1[["model.coefs4"]][["phi"]]
