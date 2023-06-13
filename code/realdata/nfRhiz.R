@@ -9,12 +9,12 @@ library(mgcv)
 library(openxlsx)
 library(readr)
 
-source("/home/daolinpang/project1/code/review/github/FAIR.R")
+source("/code/FAIR.R")
 
-lc_study_otu_table <- read_tsv("/home/daolinpang/project1/data/lc_study_otu_table.tsv")# Please extract the compressed file with the same name first
-lc_study_mapping_file <- read_tsv("/home/daolinpang/project1/data/lc_study_mapping_file.tsv")
-data.id <- read.xlsx("/home/daolinpang/project1/data/pbio.2003862.s004.xlsx")	
-imp.otu <- read.xlsx("/home/daolinpang/project1/data/pbio.2003862.s040.xlsx")
+lc_study_otu_table <- read_tsv("/data/lc_study_otu_table.tsv")# Please extract the compressed file with the same name first
+lc_study_mapping_file <- read_tsv("/data/lc_study_mapping_file.tsv")
+data.id <- read.xlsx("/data/pbio.2003862.s004.xlsx")	
+imp.otu <- read.xlsx("/data/pbio.2003862.s040.xlsx")
 
 data1.id <- data.id[which(data.id$Compartment=="Rhizosphere"&data.id$Season=="2014"),1]
 imp.otu1 <- imp.otu[which(imp.otu$Compartment=="Rhizosphere"),1]
