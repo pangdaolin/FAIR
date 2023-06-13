@@ -8,7 +8,7 @@ library(mgcv)
 library(readr)
 library(openxlsx)
 
-source("FAIR.R")
+source("/code/FAIR.R")
 
 lc_study_otu_table <- read_tsv("data/lc_study_otu_table.tsv")
 lc_study_mapping_file <- read_tsv("data/lc_study_mapping_file.tsv")
