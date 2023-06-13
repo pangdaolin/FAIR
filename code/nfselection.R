@@ -65,31 +65,13 @@ for (runs in 1:100) {
   nfhic2[runs] <- which.min(hic2)-1
 }
 
-sum(nfbic==0)
-sum(nfaic==0)
-sum(nfhic1==0)
-sum(nfhic2==0)
+table2data <- data.frame(data=rep(paste("Ex.1 n =",n,"p =",p),4),method=c("AIC","BIC","HIC_1","HIC_2"),
+                         d0=c(sum(nfaic==0),sum(nfbic==0),sum(nfhic1==0),sum(nfhic2==0)),
+                         d1=c(sum(nfaic==1),sum(nfbic==1),sum(nfhic1==1),sum(nfhic2==1)),
+                         d2=c(sum(nfaic==2),sum(nfbic==2),sum(nfhic1==2),sum(nfhic2==2)),
+                         dl2=c(sum(nfaic>2),sum(nfbic>2),sum(nfhic1>2),sum(nfhic2>2)))
 
-
-sum(nfbic==1)
-sum(nfaic==1)
-sum(nfhic1==1)
-sum(nfhic2==1)
-
-
-sum(nfbic==2)
-sum(nfaic==2)
-sum(nfhic1==2)
-sum(nfhic2==2)
-
-
-sum(nfbic>2)
-sum(nfaic>2)
-sum(nfhic1>2)
-sum(nfhic2>2)
-
-
-save.image("nfEx1.RData")
+table2data
 
 
 
