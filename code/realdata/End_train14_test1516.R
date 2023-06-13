@@ -16,9 +16,9 @@ data.id <- read.xlsx("/data/pbio.2003862.s004.xlsx")
 imp.otu <- read.xlsx("/data/pbio.2003862.s040.xlsx")
 
 
-data.train1.id <- data.id[which(data.id$Compartment=="Endosphere"&data.id$Season=="2014"),1]#data.id$Site=="Arbuckle"&
-data.test1.id <- data.id[which(data.id$Compartment=="Endosphere"&data.id$Season=="2015"),1]#data.id$Site=="Arbuckle"&
-# data.test1.id <- data.id[which(data.id$Compartment=="Endosphere"&data.id$Season=="2016"),1]#data.id$Site=="Arbuckle"&
+data.train1.id <- data.id[which(data.id$Compartment=="Endosphere"&data.id$Season=="2014"),1]
+data.test1.id <- data.id[which(data.id$Compartment=="Endosphere"&data.id$Season=="2015"),1]
+# data.test1.id <- data.id[which(data.id$Compartment=="Endosphere"&data.id$Season=="2016"),1]
 imp.otu1 <- imp.otu[which(imp.otu$Compartment=="Endosphere"),1]
 OTU.id <- lc_study_otu_table$OTUID
 all.data.id <- colnames(lc_study_otu_table)
@@ -89,7 +89,7 @@ err11 <- sqrt(sum((pre12-Y.test)^2)/length(Y.test))
 
 #######################3
 rfdata.train <- data.frame(Y=Y.train,X=X.train/rowSums(X.train))
-model5 <- randomForest(Y~.,data = rfdata.train)   #建模，ntree=j 指的树数
+model5 <- randomForest(Y~.,data = rfdata.train) 
 rfdata.test <- data.frame(X=X.test/m1)
 pre5 <- predict(model5,rfdata.test)  
 err12 <- sqrt(sum((pre5-Y.test)^2)/length(Y.test))
@@ -108,7 +108,7 @@ err13 <- sqrt(sum((pre3-Y.test)^2)/length(Y.test))
 
 ###############
 model6 <- cv.glmnet(x=X.train/m,y = Y.train,family = "gaussian")
-pre62 <- predict(model6,X.test/m1, s = "lambda.1se")   #预测
+pre62 <- predict(model6,X.test/m1, s = "lambda.1se") 
 err14 <- sqrt(sum((pre62-Y.test)^2)/length(Y.test))
 
 #############      output      ################
