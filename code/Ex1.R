@@ -118,29 +118,13 @@ eval1 <- eval1[,-1]
 eval2 <- eval2[,-1]
 eval3 <- eval3[,-1]
 
-mean(eval1[1,])
-mean(eval2[1,])
-mean(eval3[1,])
+table1data <- data.frame(VCC.mean=c(mean(eval1[1,]),mean(eval2[1,]),mean(eval3[1,])),
+                         VCC.sd=c(sd(eval1[1,]),sd(eval2[1,]),sd(eval3[1,])),
+                         TCC.mean=c(mean(eval1[2,]),mean(eval2[2,]),mean(eval3[2,])),
+                         TCC.sd=c(sd(eval1[2,]),sd(eval2[1,]),sd(eval3[2,])),
+                         D.mean=c(mean(eval1[2,]),mean(eval2[2,]),mean(eval3[2,])),
+                         D.sd=c(sd(eval1[2,]),sd(eval2[1,]),sd(eval3[2,])),
+                      method=c("FAIR","MNIR","MNIR-f"),
+                      data=rep("Example 1",3))
 
-sd(eval1[1,])
-sd(eval2[1,])
-sd(eval3[1,])
-
-mean(eval1[2,])
-mean(eval2[2,])
-mean(eval3[2,])
-
-sd(eval1[2,])
-sd(eval2[2,])
-sd(eval3[2,])
-
-
-mean(D1)
-mean(D2)
-mean(D3)
-
-sd(D1)
-sd(D2)
-sd(D3)
-
-save.image("Ex1.RData")
+table1data
