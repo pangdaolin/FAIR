@@ -6,46 +6,31 @@ library(randomForest)
 library(glmnet)
 library(MGLM)
 library(mgcv)
-
 library(readr)
 library(openxlsx)
-cal_2016 <- readRDS("D:/pdl/mypro/2021/data/plant age/cal_2016.rds")
-# length(unique(cal_2016[,1]))
-cal_ark_data <- readRDS("D:/pdl/mypro/2021/data/plant age/cal_ark_data.rds")
-gg_otus_tax <- readRDS("D:/pdl/mypro/2021/data/plant age/gg_otus_tax.rds")
-organelle <- readRDS("D:/pdl/mypro/2021/data/plant age/organelle.rds")
-lc_study_otu_table <- read_tsv("D:/pdl/mypro/2021/data/plant age/lc_study_otu_table.tsv")
-lc_study_mapping_file <- read_tsv("D:/pdl/mypro/2021/data/plant age/lc_study_mapping_file.tsv")
-data.id <- read.xlsx("D:/pdl/mypro/2021/data/plant age/pbio.2003862.s004.xlsx")	
-imp.otu <- read.xlsx("D:/pdl/mypro/2021/data/plant age/pbio.2003862.s040.xlsx")
+
+source("/home/daolinpang/project1/code/review/github/FAIR.R")
+
+lc_study_otu_table <- read_tsv("/home/daolinpang/project1/data/lc_study_otu_table.tsv")# Please extract the compressed file with the same name first
+lc_study_mapping_file <- read_tsv("/home/daolinpang/project1/data/lc_study_mapping_file.tsv")
+data.id <- read.xlsx("/home/daolinpang/project1/data/pbio.2003862.s004.xlsx")	
+imp.otu <- read.xlsx("/home/daolinpang/project1/data/pbio.2003862.s040.xlsx")
 
 
 data1.id <- data.id[which(data.id$Compartment=="Endosphere"&data.id$Season=="2014"),1]
-# data1.id <- data.id[which(data.id$Compartment=="Rhizosphere"&data.id$type=="Test"),1]
 imp.otu1 <- imp.otu[which(imp.otu$Compartment=="Endosphere"),1]
 
 OTU.id <- lc_study_otu_table$OTUID
 all.data.id <- colnames(lc_study_otu_table)
 X.train1 <- lc_study_otu_table[match(imp.otu1,OTU.id),match(data1.id,all.data.id)[-which(match(data1.id,all.data.id,nomatch = 0)==0)]]#[-which(match(data1.id,all.data.id,nomatch = 0)==0)]
 X.train1 <- t(as(X.train1,"matrix"))
-# X.test1 <- lc_study_otu_table[match(imp.otu1,OTU.id),match(data.test1.id,all.data.id)[-which(match(data.test1.id,all.data.id,nomatch = 0)==0)]]
-# X.test1 <- t(as(X.test1,"matrix"))
 Y.train1 <- lc_study_mapping_file$Age[match(data1.id,all.data.id)[-which(match(data1.id,all.data.id,nomatch = 0)==0)]]#[-which(match(data1.id,all.data.id,nomatch = 0)==0)]
-# Y.test1 <- lc_study_mapping_file$Age[match(data.test1.id,all.data.id)[-which(match(data.test1.id,all.data.id,nomatch = 0)==0)]]
-which(rowSums(X.train1)==0)
-which(colSums(X.train1==0)==0)
 X.train1x <- X.train1[,c(1:(22-1),(22+1):(ncol(X.train1)),22)]
 
 X.data <- as.matrix(X.train1x)
 Y.data <- Y.train1 
-# source("1.R")
-# source("LFIRLasso1.R")
-# source("LFIRtune.R")
-# 
-# 
 
 datasize <- nrow(X.data)
-# cvlist <- CVgroup(k = k,datasize = datasize,seed = 1206)
 p=ncol(X.data)
 
 rmse11 <- numeric()
@@ -77,14 +62,12 @@ Beta.fit1 <- rep(1, p)
 Beta.fit2 <- rep(1, p)
 Beta.fit3 <- rep(1, p)
 Beta.fit5 <- rep(1, p)
-# boxplot(rmse401)
-#cc
+
 set.seed(123456)
 
 for (runs in 1:100){
-  # i=1
   train.id <- sample(datasize,round(datasize/3*2))
-  X.train <- X.data[train.id,]  #刚才通过cvgroup生成的函数
+  X.train <- X.data[train.id,]  
   X.test <- X.data[-train.id,]
   Y.train <- Y.data[train.id]
   Y.test <- Y.data[-train.id]
@@ -98,7 +81,7 @@ for (runs in 1:100){
   hic2 <- numeric();dic21 <- numeric();dic22 <- numeric()
   
   ###############################################
-  fit0 <- LMNIRpen1(X.train, scale(Y.train), penalty=T, n.factors=1, maxit = 500)
+  fit0 <- FAIR(X.train, scale(Y.train), n.factors=1, maxit = 500)
   i=1
   hic1[i] <- -2*fit0[["lc1"]]+log(nn)*(i*(p-1)+(p-1)*k2)+2*i*nn
   pd <- 2*fit0[["lc1"]]-2*fit0[["ELBO1"]]
@@ -121,7 +104,7 @@ for (runs in 1:100){
     X.test1 <- X.test[,c((newbase1+1):(p),newbase1)]
   }
   
-  model1 <- LMNIRpen1(X.train1, scale(Y.train), penalty=T, n.factors=1, maxit = 500)
+  model1 <- FAIR(X.train1, scale(Y.train), n.factors=1, maxit = 500)
   
   phi1 <- model1[["model.coefs"]][["phi"]]
   Beta1 <- model1[["model.coefs"]][["Beta"]]
@@ -161,7 +144,7 @@ for (runs in 1:100){
   rmse11 <- c(rmse11,sqrt(sum((pre12-Y.test)^2)/length(Y.test)))
   
   ###############################################
-  fit0 <- LMNIRpen1(X.train, scale(Y.train), n.factors=2, maxit = 500)
+  fit0 <- FAIR(X.train, scale(Y.train), n.factors=2, maxit = 500)
   i=2
   hic1[i] <- -2*fit0[["lc1"]]+log(nn)*(i*(p-1)+(p-1)*k2)+2*i*nn
   pd <- 2*fit0[["lc1"]]-2*fit0[["ELBO1"]]
@@ -185,7 +168,7 @@ for (runs in 1:100){
     X.test1 <- X.test[,c((newbase1+1):(p),newbase1)]
   }
   
-  model1 <- LMNIRpen1(X.train1, scale(Y.train), n.factors=2, maxit = 500)
+  model1 <- FAIR(X.train1, scale(Y.train), n.factors=2, maxit = 500)
   
   phi1 <- c(model1[["model.coefs"]][["phi"]],0)
   Beta1 <- cbind(model1[["model.coefs"]][["Beta"]],0)
@@ -216,7 +199,7 @@ for (runs in 1:100){
   
   
   ###############################################
-  fit0 <- LMNIRpen1(X.train, scale(Y.train), n.factors=3, maxit = 500)
+  fit0 <- FAIR(X.train, scale(Y.train), n.factors=3, maxit = 500)
   i=3
   hic1[i] <- -2*fit0[["lc1"]]+log(nn)*(i*(p-1)+(p-1)*k2)+2*i*nn
   pd <- 2*fit0[["lc1"]]-2*fit0[["ELBO1"]]
@@ -239,7 +222,7 @@ for (runs in 1:100){
     X.test1 <- X.test[,c((newbase1+1):(p),newbase1)]
   }
   
-  model1 <- LMNIRpen1(X.train1, scale(Y.train), n.factors=3, maxit = 500)
+  model1 <- FAIR(X.train1, scale(Y.train), n.factors=3, maxit = 500)
   
   phi1 <- c(model1[["model.coefs"]][["phi"]],0)
   Beta1 <- cbind(model1[["model.coefs"]][["Beta"]],0)
@@ -267,7 +250,7 @@ for (runs in 1:100){
   rmse31 <- c(rmse31,sqrt(sum((pre12-Y.test)^2)/length(Y.test)))
   
   ###############################################
-  fit0 <- LMNIRpen1(X.train, scale(Y.train), n.factors=4, maxit = 500)
+  fit0 <- FAIR(X.train, scale(Y.train), n.factors=4, maxit = 500)
   i=4
   hic1[i] <- -2*fit0[["lc1"]]+log(nn)*(i*(p-1)+(p-1)*k2)+2*i*nn
   pd <- 2*fit0[["lc1"]]-2*fit0[["ELBO1"]]
@@ -290,7 +273,7 @@ for (runs in 1:100){
     X.test1 <- X.test[,c((newbase1+1):(p),newbase1)]
   }
   
-  model1 <- LMNIRpen1(X.train1, scale(Y.train), n.factors=4, maxit = 500)
+  model1 <- FAIR(X.train1, scale(Y.train), n.factors=4, maxit = 500)
   phi1 <- c(model1[["model.coefs"]][["phi"]],0)
   Beta1 <- cbind(model1[["model.coefs"]][["Beta"]],0)
   
@@ -305,7 +288,7 @@ for (runs in 1:100){
   z12_train <- X.train%*%t(Beta1)/m
   z11_test <- X.test%*%(phi1)/m1
   z12_test <- X.test%*%t(Beta1)/m1
-
+  
   res1 = data.frame(Y=Y.train,X1=(z11_train),X2=(z12_train))#,m=scale(m)
   # res21 = data.frame(Y=Y.test,X1=(z11_test),X2=(z12_test))
   train.object <- data.frame(X1=z11_train,X2=z12_train)
@@ -316,7 +299,7 @@ for (runs in 1:100){
   rmse41 <- c(rmse41,sqrt(sum((pre12-Y.test)^2)/length(Y.test)))
   
   ###############################################
-  fit0 <- LMNIRpen1(X.train, scale(Y.train), n.factors=5, maxit = 500)
+  fit0 <- FAIR(X.train, scale(Y.train), n.factors=5, maxit = 500)
   i=5
   hic1[i] <- -2*fit0[["lc1"]]+log(nn)*(i*(p-1)+(p-1)*k2)+2*i*nn
   pd <- 2*fit0[["lc1"]]-2*fit0[["ELBO1"]]
@@ -339,7 +322,7 @@ for (runs in 1:100){
     X.test1 <- X.test[,c((newbase1+1):(p),newbase1)]
   }
   
-  model1 <- LMNIRpen1(X.train1, scale(Y.train), n.factors=5, maxit = 500)
+  model1 <- FAIR(X.train1, scale(Y.train), n.factors=5, maxit = 500)
   phi1 <- c(model1[["model.coefs"]][["phi"]],0)
   Beta1 <- cbind(model1[["model.coefs"]][["Beta"]],0)
   
@@ -371,29 +354,14 @@ for (runs in 1:100){
   nf13[runs] <- which.min(dic12)+1
   
   print(paste("iterations=",runs,";err1=",mean(rmse11),";err2=",mean(rmse21),";err3=",mean(rmse31),";err4=",mean(rmse41),";err5=",mean(rmse51)))
-  
 }
 
 
-mean(rmse11)
-mean(rmse12)
-mean(rmse21)
-mean(rmse22)
-mean(rmse31)
-mean(rmse32)
-mean(rmse41)
-mean(rmse42)
-mean(rmse51)
-mean(rmse52)
-
-mean(rmse11)
-mean(rmse21)
-mean(rmse31)
-mean(rmse41)
-mean(rmse51)
 
 boxdata11 <- data.frame(err=c(rmse11,rmse21,rmse31,rmse41,rmse51),
                         method=c(rep("d=1",100),rep("d=2",100),rep("d=3",100),
                                  rep("d=4",100),rep("d=5",100)),
                         data=rep("Endosphere",500))
+
+write.table(boxdata11,"/code/realdata/nfEnd14.csv",row.names=FALSE,col.names=TRUE,sep=",")
 
