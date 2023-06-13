@@ -248,7 +248,7 @@ FP52.sd <- sd(unlist(FP52))/(p-9)
 FP62.me <- mean(unlist(FP62))/(p-9)
 FP62.sd <- sd(unlist(FP62))/(p-9)
 
-table3data <- data.frame(data=rep(paste("Ex.4 n =",n,"p =",p),3),
+table3data <- data.frame(data=rep(paste("Ex.4 n =",n,"p =",p),6),
                          method=c("FAIR","MNIR","MNIR-f","CLASSO","LASSO-SIR_1","LASSO-SIR_2"),
                          TPR.mean=c(TP12.me,TP22.me,TP32.me,TP42.me,TP52.me,TP62.me),
                          TPR.sd=c(TP12.sd,TP22.sd,TP32.sd,TP42.sd,TP52.sd,TP62.sd),
