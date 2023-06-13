@@ -1,6 +1,6 @@
 ##k=0
 library(MGLM)
-source("FAIR.R")
+source("/code/FAIR.R")
 
 n=60; p=10; k=1;
 nfbic <- numeric();nfaic <- numeric();nfhic1 <- numeric();nfhic2 <- numeric()
