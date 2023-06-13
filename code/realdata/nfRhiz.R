@@ -21,9 +21,9 @@ imp.otu1 <- imp.otu[which(imp.otu$Compartment=="Rhizosphere"),1]
 
 OTU.id <- lc_study_otu_table$OTUID
 all.data.id <- colnames(lc_study_otu_table)
-X.train1 <- lc_study_otu_table[match(imp.otu1,OTU.id),match(data1.id,all.data.id)]#[-which(match(data1.id,all.data.id,nomatch = 0)==0)]
+X.train1 <- lc_study_otu_table[match(imp.otu1,OTU.id),match(data1.id,all.data.id)]
 X.train1 <- t(as(X.train1,"matrix"))
-Y.train1 <- lc_study_mapping_file$Age[match(data1.id,all.data.id)]#[-which(match(data1.id,all.data.id,nomatch = 0)==0)]
+Y.train1 <- lc_study_mapping_file$Age[match(data1.id,all.data.id)]
 X.train1x <- X.train1[,c(1:(22-1),(22+1):(ncol(X.train1)),22)]
 X.data <- as.matrix(X.train1x)
 Y.data <- Y.train1 
