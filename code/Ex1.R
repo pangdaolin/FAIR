@@ -118,13 +118,13 @@ eval1 <- eval1[,-1]
 eval2 <- eval2[,-1]
 eval3 <- eval3[,-1]
 
-table1data <- data.frame(VCC.mean=c(mean(eval1[1,]),mean(eval2[1,]),mean(eval3[1,])),
+table1data <- data.frame(data=rep(paste("Ex.1 n =",n,"p =",p),3),method=c("FAIR","MNIR","MNIR-f"),
+                         VCC.mean=c(mean(eval1[1,]),mean(eval2[1,]),mean(eval3[1,])),
                          VCC.sd=c(sd(eval1[1,]),sd(eval2[1,]),sd(eval3[1,])),
                          TCC.mean=c(mean(eval1[2,]),mean(eval2[2,]),mean(eval3[2,])),
                          TCC.sd=c(sd(eval1[2,]),sd(eval2[1,]),sd(eval3[2,])),
                          D.mean=c(mean(eval1[2,]),mean(eval2[2,]),mean(eval3[2,])),
-                         D.sd=c(sd(eval1[2,]),sd(eval2[1,]),sd(eval3[2,])),
-                      method=c("FAIR","MNIR","MNIR-f"),
-                      data=rep("Example 1",3))
+                         D.sd=c(sd(eval1[2,]),sd(eval2[1,]),sd(eval3[2,])))
+
 
 table1data
