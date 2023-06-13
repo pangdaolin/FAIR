@@ -30,16 +30,11 @@ which(colSums(X.train1==0)==0)
 X.train1x <- X.train1[,c(1:(22-1),(22+1):(ncol(X.train1)),22)]
 X.data <- as.matrix(X.train1x)
 Y.data <- Y.train1 
-# source("1.R")
-# source("LFIRLasso1.R")
-# source("LFIRtune.R")
-# 
-# 
+
 
 
 
 datasize <- nrow(X.data)
-# cvlist <- CVgroup(k = k,datasize = datasize,seed = 1206)
 p=ncol(X.data)
 
 rmse11 <- numeric()
@@ -71,14 +66,12 @@ Beta.fit1 <- rep(1, p)
 Beta.fit2 <- rep(1, p)
 Beta.fit3 <- rep(1, p)
 Beta.fit5 <- rep(1, p)
-# boxplot(rmse401)
-#cc
+
 set.seed(123456)
 
 for (runs in 1:100){
-  # i=1
   train.id <- sample(datasize,round(datasize/3*2))
-  X.train <- X.data[train.id,]  #刚才通过cvgroup生成的函数
+  X.train <- X.data[train.id,]  
   X.test <- X.data[-train.id,]
   Y.train <- Y.data[train.id]
   Y.test <- Y.data[-train.id]
