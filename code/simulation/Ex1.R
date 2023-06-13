@@ -4,8 +4,8 @@ library(MGLM)
 library(MASS)
 library(CondIndTests)
 library(caret)
-source("FAIR.R")
-source("eval_space.R")
+source("/code/FAIR.R")
+source("/code/eval_space.R")
 
 n=60; p=10; k=1;
 D0 <- numeric()
