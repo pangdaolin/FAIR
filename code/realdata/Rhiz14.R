@@ -152,5 +152,5 @@ boxdata11 <- data.frame(err=c(rmse12,rmse3,rmse5,rmse62),
                                  rep("glmnet",100)),
                         data=rep("Rhizosphere",400))
 
-write.table(boxdata11,"/home/daolinpang/project1/code/review/github/res/errRhiz14.csv",row.names=FALSE,col.names=TRUE,sep=",")
+write.table(boxdata11,"/code/realdata/errRhiz14.csv",row.names=FALSE,col.names=TRUE,sep=",")
 
