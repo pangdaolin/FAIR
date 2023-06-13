@@ -143,5 +143,6 @@ boxdata21 <- data.frame(err=c(rmse12,rmse3,rmse5,rmse62),
                                  rep("glmnet",100)),
                         data=rep("Endosphere",400))
 
+write.table(boxdata21,"/code/realdata/errEnd14.csv",row.names=FALSE,col.names=TRUE,sep=",")
 
 
