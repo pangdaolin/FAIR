@@ -9,7 +9,7 @@ library(readr)
 library(openxlsx)
 source("/code/FAIR.R")
 
-lc_study_otu_table <- read_tsv("/data/lc_study_otu_table.tsv")
+lc_study_otu_table <- read_tsv("/data/lc_study_otu_table.tsv")# Please extract the compressed file with the same name first
 lc_study_mapping_file <- read_tsv("/data/lc_study_mapping_file.tsv")
 data.id <- read.xlsx("/data/pbio.2003862.s004.xlsx")	
 imp.otu <- read.xlsx("/data/pbio.2003862.s040.xlsx")
