@@ -235,30 +235,24 @@ TP62.me <- mean(unlist(TP62))/9
 TP62.sd <- sd(unlist(TP62))/9
 
 
-FP12.me <- mean(unlist(FP12))/41
-FP12.sd <- sd(unlist(FP12))/41
-FP22.me <- mean(unlist(FP22))/41
-FP22.sd <- sd(unlist(FP22))/41
-FP32.me <- mean(unlist(FP32))/41
-FP32.sd <- sd(unlist(FP32))/41
-FP42.me <- mean(unlist(FP42))/41
-FP42.sd <- sd(unlist(FP42))/41
-FP52.me <- mean(unlist(FP52))/41
-FP52.sd <- sd(unlist(FP52))/41
-FP62.me <- mean(unlist(FP62))/41
-FP62.sd <- sd(unlist(FP62))/41
+FP12.me <- mean(unlist(FP12))/(p-9)
+FP12.sd <- sd(unlist(FP12))/(p-9)
+FP22.me <- mean(unlist(FP22))/(p-9)
+FP22.sd <- sd(unlist(FP22))/(p-9)
+FP32.me <- mean(unlist(FP32))/(p-9)
+FP32.sd <- sd(unlist(FP32))/(p-9)
+FP42.me <- mean(unlist(FP42))/(p-9)
+FP42.sd <- sd(unlist(FP42))/(p-9)
+FP52.me <- mean(unlist(FP52))/(p-9)
+FP52.sd <- sd(unlist(FP52))/(p-9)
+FP62.me <- mean(unlist(FP62))/(p-9)
+FP62.sd <- sd(unlist(FP62))/(p-9)
 
-# PCF12.me <- mean(unlist(PCF12))
-# PCF12.sd <- sd(unlist(PCF12))
-# PCF22.me <- mean(unlist(PCF22))
-# PCF22.sd <- sd(unlist(PCF22))
-# PCF32.me <- mean(unlist(PCF32))
-# PCF32.sd <- sd(unlist(PCF32))
-# PCF42.me <- mean(unlist(PCF42))
-# PCF42.sd <- sd(unlist(PCF42))
-# PCF52.me <- mean(unlist(PCF52))
-# PCF52.sd <- sd(unlist(PCF52))
+table3data <- data.frame(data=rep(paste("Ex.4 n =",n,"p =",p),3),
+                         method=c("FAIR","MNIR","MNIR-f","CLASSO","LASSO-SIR_1","LASSO-SIR_2"),
+                         TPR.mean=c(TP12.me,TP22.me,TP32.me,TP42.me,TP52.me,TP62.me),
+                         TPR.sd=c(TP12.sd,TP22.sd,TP32.sd,TP42.sd,TP52.sd,TP62.sd),
+                         FPR.mean=c(FP12.me,FP22.me,FP32.me,FP42.me,FP52.me,FP62.me),
+                         FPR.sd=c(FP12.sd,FP22.sd,FP32.sd,FP42.sd,FP52.sd,FP62.sd))
 
-
-save.image("Ex4.RData")
-
+table3data
